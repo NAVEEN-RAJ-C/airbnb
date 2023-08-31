@@ -33,20 +33,53 @@ def main():
     # Convert Decimal128 to float64 for visualization
     df['price'] = df['price'].apply(lambda x: float(str(x)))
     category = st.selectbox('Select a category', ['None', 'property_type', 'room_type', 'bed_type', 'country'])
-    if category != 'None':
-        # Set Seaborn style
-        sns.set(style="whitegrid")
+    if st.button('Show'):
+        if category != 'None':
+            # Set Seaborn style
+            sns.set(style="whitegrid")
 
-        # Create a bar plot using Seaborn
-        plt.figure(figsize=(8, 6))
-        sns.barplot(x=category, y='price', data=df)
-        plt.xlabel(category)
-        plt.ylabel('price')
-        plt.title('Price Distribution')
-        plt.xticks(rotation=90)
+            # Create a bar plot using Seaborn
+            fig, ax = plt.subplots(figsize=(8, 6))
+            sns.barplot(x=category, y='price', data=df, ax=ax)
+            ax.set_xlabel(category)
+            ax.set_ylabel('price')
+            ax.set_title('Price Distribution')
+            ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
 
-        # Display Seaborn plot using st.pyplot
-        st.pyplot()
+            # Display Matplotlib figure using st.pyplot
+            st.pyplot(fig)
+            plt.close(fig)  # Close the figure to release resources
+
+    st.title('Heatmap')
+    if st.button('Show Heatmap'):
+        # Select the relevant columns for the heatmap
+        columns_to_visualize = ['price', 'monthly_price', 'bedrooms', 'reviews_per_month', 'maximum_nights']
+
+        # Create a pivot table or reshape the data if needed
+        # Example: pivot_table = df.pivot_table(index='name', columns='roomtype', values='price', aggfunc='mean')
+
+        # Create a heatmap using Seaborn
+        fig, ax = plt.subplots(figsize=(12, 10))
+        heatmap_data = df[columns_to_visualize].corr()
+        sns.heatmap(heatmap_data, cmap='coolwarm', annot=True, fmt='.2f', ax=ax)
+        plt.title('Heatmap of Column Relationships')
+
+        # Display Matplotlib figure using st.pyplot
+        st.pyplot(fig)
+        plt.close(fig)  # Close the figure to release resources
+
+    st.title('Price Table')
+    country = st.selectbox('Select a country', df['country'].unique())
+    roomtype = st.selectbox('Select a roomtype', df['room_type'].unique())
+    bedrooms = st.selectbox('Select number of bedrooms', df['bedrooms'].unique())
+    if st.button('show table'):
+        # Filter the DataFrame based on user selections
+        filtered_df = df[(df['country'] == country) & (df['room_type'] == roomtype) & (df['bedrooms'] == bedrooms)]
+
+        # Select specific columns to display from the filtered DataFrame
+        columns_to_display = ['name', 'price', 'availability', 'reviews_per_month', 'maximum_nights']
+        # Display the filtered DataFrame
+        st.write(filtered_df[columns_to_display])
 
 
 if __name__ == "__main__":
