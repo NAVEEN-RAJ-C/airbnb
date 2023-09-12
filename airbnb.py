@@ -17,7 +17,7 @@ def is_valid_availability(avail_dict):
 
 def geomap(df):
     df = df.sample(n=100, random_state=42)
-    m = folium.Map(location=[0, 0], zoom_start=4)
+    m = folium.Map(zoom_start=4)
 
     # Add markers with tooltips to the map
     for index, row in df.iterrows():
@@ -55,13 +55,16 @@ def graph(df, category):
 
 def heat(df):
     # Select the relevant columns for the heatmap
-    columns_to_visualize = ['price', 'monthly_price', 'bedrooms', 'reviews_per_month', 'maximum_nights']
+    columns_to_visualize = ['price', 'monthly_price', 'bedrooms', 'reviews_per_month', 'maximum_nights',
+                            'accommodates', 'beds', 'number_of_reviews', 'bathrooms', 'security_deposit',
+                            'cleaning_fee', 'extra_people', 'guests_included', 'availability_30',
+                            'availability_60', 'availability_90', 'availability_365']
 
     # Create a pivot table or reshape the data if needed
     # Example: pivot_table = df.pivot_table(index='name', columns='roomtype', values='price', aggfunc='mean')
 
     # Create a heatmap using Seaborn
-    fig, ax = plt.subplots(figsize=(12, 10))
+    fig, ax = plt.subplots(figsize=(10, 10))
     heatmap_data = df[columns_to_visualize].corr()
     sns.heatmap(heatmap_data, cmap='coolwarm', annot=True, fmt='.2f', ax=ax)
     plt.title('Heatmap of Column Relationships')
@@ -71,14 +74,18 @@ def heat(df):
     plt.close(fig)  # Close the figure to release resources
 
 
-def price_table(df, country, roomtype, bedrooms):
+def price_table(df, roomtype, bedrooms):
     # Filter the DataFrame based on user selections
-    filtered_df = df[(df['country'] == country) & (df['room_type'] == roomtype) & (df['bedrooms'] == bedrooms)]
+    filtered_df = df[(df['room_type'] == roomtype) & (df['bedrooms'] == bedrooms)]
 
     # Select specific columns to display from the filtered DataFrame
-    columns_to_display = ['name', 'price', 'availability', 'reviews_per_month', 'maximum_nights']
-    # Display the filtered DataFrame
-    st.write(filtered_df[columns_to_display])
+    columns_to_display = ['name', 'price', 'reviews_per_month', 'maximum_nights', 'availability_30',
+                            'availability_60', 'availability_90', 'availability_365']
+    # Sort the DataFrame by the 'price' column in ascending order
+    sorted_df = filtered_df.sort_values(by='price', ascending=True)
+
+    # Display the sorted DataFrame
+    st.write(sorted_df[columns_to_display])
 
 
 def main():
@@ -86,30 +93,25 @@ def main():
     df = pd.read_csv('airbnb.csv')
     st.set_page_config(page_title='Airbnb Analysis', layout='wide')
     st.title('Airbnb Listing Geo-visualisation')
-
+    country = st.sidebar.selectbox('Select a country', df['country'].unique())
+    df = df[(df['country'] == country)]
     # Geographical analysis of the listings
-    if st.button("Get Geomapping"):
-        geomap(df)
-
-    # Graphical representation
-    st.title('Graphical Analysis')
-    category = st.selectbox('Select a category', ['None', 'property_type', 'room_type', 'bed_type', 'country'])
-    if st.button('Show'):
-        if category != 'None':
-            graph(df, category)
+    geomap(df)
 
     # Heatmap to find co-relation
     st.title('Heatmap')
-    if st.button('Show Heatmap'):
-        heat(df)
+    heat(df)
+    # Graphical representation
+    st.title('Graphical Analysis')
+    category = st.selectbox('Select a category', ['None', 'property_type', 'room_type', 'bed_type', 'country'])
+    if category != 'None':
+            graph(df, category)
 
     # Price table for selected features
     st.title('Price Table')
-    country = st.selectbox('Select a country', df['country'].unique())
     roomtype = st.selectbox('Select a roomtype', df['room_type'].unique())
     bedrooms = st.selectbox('Select number of bedrooms', df['bedrooms'].unique())
-    if st.button('show table'):
-        price_table(df, country, roomtype, bedrooms)
+    price_table(df, roomtype, bedrooms)
 
 
 if __name__ == "__main__":
