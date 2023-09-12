@@ -92,23 +92,25 @@ def main():
     # read the csv file
     df = pd.read_csv('airbnb.csv')
     st.set_page_config(page_title='Airbnb Analysis', layout='wide')
-    st.title('Airbnb Listing Geo-visualisation')
+    # Use Markdown with HTML/CSS to center-align the title
+    st.markdown('<h1 style="text-align: center;">AIRBNB ANALYSIS</h1>', unsafe_allow_html=True)
+    st.header('Airbnb Listing Geo-visualisation')
     country = st.sidebar.selectbox('Select a country', df['country'].unique())
     df = df[(df['country'] == country)]
     # Geographical analysis of the listings
     geomap(df)
 
     # Heatmap to find co-relation
-    st.title('Heatmap')
+    st.header('Heatmap')
     heat(df)
     # Graphical representation
-    st.title('Graphical Analysis')
+    st.header('Graphical Analysis')
     category = st.selectbox('Select a category', ['None', 'property_type', 'room_type', 'bed_type', 'country'])
     if category != 'None':
             graph(df, category)
 
     # Price table for selected features
-    st.title('Price Table')
+    st.header('Price Table')
     roomtype = st.selectbox('Select a roomtype', df['room_type'].unique())
     bedrooms = st.selectbox('Select number of bedrooms', df['bedrooms'].unique())
     price_table(df, roomtype, bedrooms)
