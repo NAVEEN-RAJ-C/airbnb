@@ -80,7 +80,7 @@ def price_table(df, roomtype, bedrooms):
 
     # Select specific columns to display from the filtered DataFrame
     columns_to_display = ['name', 'price', 'reviews_per_month', 'maximum_nights', 'availability_30',
-                            'availability_60', 'availability_90', 'availability_365']
+                          'availability_60', 'availability_90', 'availability_365']
     # Sort the DataFrame by the 'price' column in ascending order
     sorted_df = filtered_df.sort_values(by='price', ascending=True)
 
@@ -105,9 +105,9 @@ def main():
     heat(df)
     # Graphical representation
     st.header('Graphical Analysis')
-    category = st.selectbox('Select a category', ['None', 'property_type', 'room_type', 'bed_type', 'country'])
+    category = st.selectbox('Select a category', ['property_type', 'room_type', 'bed_type'])
     if category != 'None':
-            graph(df, category)
+        graph(df, category)
 
     # Price table for selected features
     st.header('Price Table')
