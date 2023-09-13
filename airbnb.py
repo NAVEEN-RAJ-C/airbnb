@@ -16,7 +16,6 @@ def is_valid_availability(avail_dict):
 
 
 def geomap(df):
-    df = df.sample(n=100, random_state=42)
     m = folium.Map(zoom_start=4)
 
     # Add markers with tooltips to the map
@@ -58,10 +57,7 @@ def heat(df):
     columns_to_visualize = ['price', 'monthly_price', 'bedrooms', 'reviews_per_month', 'maximum_nights',
                             'accommodates', 'beds', 'number_of_reviews', 'bathrooms', 'security_deposit',
                             'cleaning_fee', 'extra_people', 'guests_included', 'availability_30',
-                            'availability_60', 'availability_90', 'availability_365']
-
-    # Create a pivot table or reshape the data if needed
-    # Example: pivot_table = df.pivot_table(index='name', columns='roomtype', values='price', aggfunc='mean')
+                            'availability_60', 'availability_90', 'availability_365', 'rating']
 
     # Create a heatmap using Seaborn
     fig, ax = plt.subplots(figsize=(10, 10))
